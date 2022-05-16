@@ -1,5 +1,8 @@
 package com.yusufaydin.pinsoftchallenge.view
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -24,7 +27,10 @@ class MoviesDetail : AppCompatActivity() {
         val movieId = intent.getStringExtra("movieId")
         val viewModelFactory = MoviesViewModelFactory(MoviesRepository())
         viewModel = ViewModelProvider(this, viewModelFactory).get(MoviesViewModel::class.java)
-        viewModel.getSelectedMovie(movieId!!)
+        if (isConnected() == true) {
+            viewModel.getSelectedMovie(movieId!!)
+        } else Toast.makeText(this, "No Internet", Toast.LENGTH_SHORT).show()
+
         loadSelectedMovie()
     }
 
@@ -71,5 +77,17 @@ class MoviesDetail : AppCompatActivity() {
 
     private fun showProgressBar() {
         binding.detailPaginationProgressBar.show()
+    }
+
+    private fun isConnected(): Boolean {
+        var connectivityManager: ConnectivityManager =
+            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        var network: NetworkInfo? = connectivityManager.activeNetworkInfo
+        if (network != null) {
+            if (network.isConnected) {
+                return true
+            }
+        }
+        return false
     }
 }

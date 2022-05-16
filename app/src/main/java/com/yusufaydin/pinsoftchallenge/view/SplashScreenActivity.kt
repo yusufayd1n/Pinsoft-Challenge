@@ -19,7 +19,7 @@ class SplashScreenActivity : AppCompatActivity() {
         binding = ActivitySplashScreenBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if (isConnected0() == false) {
+        if (isConnected() == false) {
             var builder = AlertDialog.Builder(this)
             builder.setTitle("No Internet Connection")
             builder.setMessage("Try to connect internet for this app")
@@ -47,7 +47,7 @@ class SplashScreenActivity : AppCompatActivity() {
 
     }
 
-    fun isConnected0(): Boolean {
+    private fun isConnected(): Boolean {
         var connectivityManager: ConnectivityManager =
             getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         var network: NetworkInfo? = connectivityManager.activeNetworkInfo

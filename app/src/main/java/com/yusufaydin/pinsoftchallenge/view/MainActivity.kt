@@ -2,6 +2,8 @@ package com.yusufaydin.pinsoftchallenge.view
 
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.*
@@ -42,7 +44,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         val viewModelFactory = MoviesViewModelFactory(MoviesRepository())
         viewModel = ViewModelProvider(this, viewModelFactory).get(MoviesViewModel::class.java)
         setUpMovieRecyclerView()
@@ -54,14 +55,16 @@ class MainActivity : AppCompatActivity() {
     private fun searchEdittextChangeListener() {
         binding.movieNameEditTextView.addTextChangedListener { editable ->
             lifecycleScope.launch {
-                delay(2000)
+                delay(3000)
                 editable?.let {
                     viewModel.moviesPageNumber = 1
                     if (editable.toString().isNotEmpty()) {
                         if (editable.length > 2) {
-                            viewModel.searchBoolean = true
-                            closeKeyboard()
-                            viewModel.getSearchedMovie(editable.toString())
+                            if (isConnected() == true) {
+                                viewModel.searchBoolean = true
+                                closeKeyboard()
+                                viewModel.getSearchedMovie(editable.toString())
+                            } else printToast("No Internet")
                         } else printToast("Please Try Longer Movie Name")
                     } else printToast("Please Enter Movie Name")
                 }
@@ -166,6 +169,18 @@ class MainActivity : AppCompatActivity() {
             hideMe.hideSoftInputFromWindow(view.windowToken, 0)
         }
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
+    }
+
+    private fun isConnected(): Boolean {
+        var connectivityManager: ConnectivityManager =
+            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        var network: NetworkInfo? = connectivityManager.activeNetworkInfo
+        if (network != null) {
+            if (network.isConnected) {
+                return true
+            }
+        }
+        return false
     }
 }
 
