@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
     private fun searchEdittextChangeListener() {
         binding.movieNameEditTextView.addTextChangedListener { editable ->
             lifecycleScope.launch {
-                delay(3000)
+                delay(4000)
                 editable?.let {
                     viewModel.moviesPageNumber = 1
                     if (editable.toString().isNotEmpty()) {
